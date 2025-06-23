@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
 import {
   Mail,
   Phone,
@@ -25,8 +24,6 @@ import {
   Moon,
   Star,
 } from "lucide-react"
-
-const odooOIcon = "https://raw.githubusercontent.com/odoo/odoo/16.0/odoo/addons/base/static/img/odoo_o.png"
 
 export default function Portfolio() {
   const [activeSection, setActiveSection] = useState("inicio")
