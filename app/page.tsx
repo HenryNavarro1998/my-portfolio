@@ -17,7 +17,6 @@ import {
   Code,
   BookOpen,
   Calendar,
-  ExternalLink,
   Menu,
   X,
   Sun,
@@ -39,7 +38,7 @@ export default function Portfolio() {
   })
   const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
   const [repos, setRepos] = useState<any[]>([])
-  const [loadingRepos, setLoadingRepos] = useState(true)
+  const [loadingRepos, setLoadingRepos] = useState<Boolean>(true)
 
   useEffect(() => {
     setMounted(true)
@@ -135,6 +134,7 @@ export default function Portfolio() {
         const data = await res.json()
         setRepos(data)
       } catch (e) {
+        console.log(e)
         setRepos([])
       } finally {
         setLoadingRepos(false)
