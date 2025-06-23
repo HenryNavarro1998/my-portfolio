@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
+import { Progress } from "@/components/ui/progress"
 import {
   Mail,
   Phone,
@@ -22,13 +23,24 @@ import {
   X,
   Sun,
   Moon,
+  Star,
 } from "lucide-react"
+
+const odooOIcon = "https://raw.githubusercontent.com/odoo/odoo/16.0/odoo/addons/base/static/img/odoo_o.png"
 
 export default function Portfolio() {
   const [activeSection, setActiveSection] = useState("inicio")
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [theme, setTheme] = useState<"light" | "dark">("light")
   const [mounted, setMounted] = useState(false)
+  const [formData, setFormData] = useState({
+    name: "",
+    lastname: "",
+    email: "",
+    subject: "",
+    message: "",
+  })
+  const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
 
   useEffect(() => {
     setMounted(true)
@@ -46,6 +58,44 @@ export default function Portfolio() {
     setTheme(newTheme)
     localStorage.setItem("theme", newTheme)
     document.documentElement.classList.toggle("dark", newTheme === "dark")
+  }
+
+  const handleDownloadCV = () => {
+    const link = document.createElement("a")
+    link.href = "/CV%20HENRY%20NAVARRO%20-%20ES.docx.pdf"
+    link.download = "CV-Henry-Navarro.pdf"
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setFormStatus("loading")
+
+    try {
+      const response = await fetch("/api/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (response.ok) {
+        setFormStatus("success")
+        setFormData({ name: "", lastname: "", email: "", subject: "", message: "" })
+      } else {
+        setFormStatus("error")
+      }
+    } catch (error) {
+      setFormStatus("error")
+    }
   }
 
   const scrollToSection = (sectionId: string) => {
@@ -82,50 +132,104 @@ export default function Portfolio() {
     {
       name: "Python",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
+      level: 5,
+      levelText: "Avanzado",
     },
     {
       name: "JavaScript",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg",
+      level: 4,
+      levelText: "Intermedio-Avanzado",
+    },
+    {
+      name: "TypeScript",
+      icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg",
+      level: 4,
+      levelText: "Intermedio-Avanzado",
     },
     {
       name: "React",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
+      level: 4,
+      levelText: "Intermedio",
+    },
+    {
+      name: "Next.js",
+      icon: "/next.svg",
+      level: 4,
+      levelText: "Intermedio",
     },
     {
       name: "Node.js",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg",
+      level: 3,
+      levelText: "Intermedio",
+    },
+    {
+      name: "Express",
+      icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg",
+      level: 3,
+      levelText: "Intermedio",
+    },
+    {
+      name: "NestJS",
+      icon: "./nestjs.svg",
+      level: 2,
+      levelText: "Básico-Intermedio",
+    },
+    {
+      name: "Java",
+      icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg",
+      level: 2,
+      levelText: "Básico-Intermedio",
     },
     {
       name: "Odoo",
-      icon: "https://upload.wikimedia.org/wikipedia/commons/5/50/Odoo_logo.svg",
+      icon: "https://odoocdn.com/openerp_website/static/src/img/assets/svg/odoo_logo.svg",
+      level: 5,
+      levelText: "Avanzado",
     },
     {
       name: "PostgreSQL",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg",
+      level: 4,
+      levelText: "Avanzado",
     },
     {
       name: "Docker",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg",
+      level: 3,
+      levelText: "Intermedio",
     },
     {
       name: "Git",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg",
+      level: 4,
+      levelText: "Avanzado",
     },
     {
       name: "HTML",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg",
+      level: 5,
+      levelText: "Avanzado",
     },
     {
       name: "CSS",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg",
+      level: 4,
+      levelText: "Avanzado",
     },
     {
       name: "Django",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/django/django-plain.svg",
+      level: 3,
+      levelText: "Intermedio",
     },
     {
       name: "Linux",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg",
+      level: 4,
+      levelText: "Intermedio-Avanzado",
     },
   ]
 
@@ -239,7 +343,10 @@ export default function Portfolio() {
                 </Button>
               </motion.div>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600">
+                <Button
+                  onClick={handleDownloadCV}
+                  className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+                >
                   <Download className="w-4 h-4 mr-2" />
                   Descargar CV
                 </Button>
@@ -320,7 +427,10 @@ export default function Portfolio() {
                       </Button>
                     </motion.div>
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      <Button className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 flex-1 ml-4">
+                      <Button
+                        onClick={handleDownloadCV}
+                        className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 flex-1 ml-4"
+                      >
                         <Download className="w-4 h-4 mr-2" />
                         Descargar CV
                       </Button>
@@ -384,6 +494,7 @@ export default function Portfolio() {
                   <Button
                     size="lg"
                     variant="outline"
+                    onClick={handleDownloadCV}
                     className="dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
                   >
                     <Download className="w-5 h-5 mr-2" />
@@ -624,41 +735,36 @@ export default function Portfolio() {
             ></motion.div>
           </motion.div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {technologies.map((tech, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                whileHover={{
-                  scale: 1.1,
-                  y: -5,
-                  transition: { duration: 0.2 },
-                }}
-                className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-lg dark:shadow-gray-900/20 transition-all text-center group border dark:border-gray-700"
+                whileHover={{ y: -5, transition: { duration: 0.2 } }}
               >
-                <motion.div
-                  whileHover={{ rotate: [0, -10, 10, 0] }}
-                  transition={{ duration: 0.5 }}
-                  className="w-12 h-12 mx-auto mb-3 flex items-center justify-center"
-                >
-                  <img
-                    src={tech.icon || "/placeholder.svg"}
-                    alt={tech.name}
-                    className="w-10 h-10 object-contain"
-                    onError={(e) => {
-                      e.currentTarget.style.display = "none"
-                      const nextElement = e.currentTarget.nextElementSibling as HTMLElement
-                      if (nextElement) {
-                        nextElement.style.display = "block"
-                      }
-                    }}
-                  />
-                  <div className="hidden text-2xl">⚙️</div>
-                </motion.div>
-                <div className="text-sm font-medium text-gray-900 dark:text-white">{tech.name}</div>
+                <Card className="p-6 dark:bg-gray-800 dark:border-gray-700 h-full flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center mb-4">
+                      <img
+                        src={tech.icon}
+                        alt={tech.name}
+                        className="w-10 h-10 mr-4"
+                      />
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">{tech.name}</h3>
+                        <div className="flex items-center gap-1 mt-1">
+                          {[...Array(5)].map((_, i) => (
+                            <Star key={i} className={`w-4 h-4 ${i < tech.level ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300 dark:text-gray-600'}`} fill={i < tech.level ? 'currentColor' : 'none'} />
+                          ))}
+                          <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">{tech.levelText}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
               </motion.div>
             ))}
           </div>
@@ -921,9 +1027,10 @@ export default function Portfolio() {
 
               <div className="space-y-6">
                 {[
-                  { icon: Mail, title: "Correo electrónico", value: "henrymanuelnavarro@gmail.com" },
-                  { icon: Phone, title: "Teléfono", value: "+58 412-2953884" },
-                  { icon: Linkedin, title: "LinkedIn", value: "linkedin.com/in/henry-navarro/" },
+                  { icon: Mail, title: "Correo electrónico", value: "henrymanuelnavarro@gmail.com", href: "mailto:henrymanuelnavarro@gmail.com" },
+                  { icon: Phone, title: "Teléfono", value: "+58 412-2953884", href: "tel:+584122953884" },
+                  { icon: Linkedin, title: "LinkedIn", value: "linkedin.com/in/henry-navarro/", href: "https://www.linkedin.com/in/henry-navarro/" },
+                  { icon: Github, title: "GitHub", value: "github.com/HenryNavarro1998", href: "https://github.com/HenryNavarro1998" },
                   { icon: MapPin, title: "Ubicación", value: "Ciudad Guayana, Venezuela" },
                 ].map((item, index) => (
                   <motion.div
@@ -943,7 +1050,13 @@ export default function Portfolio() {
                     </motion.div>
                     <div>
                       <div className="font-medium text-gray-900 dark:text-white">{item.title}</div>
-                      <div className="text-gray-600 dark:text-gray-400">{item.value}</div>
+                      {item.href ? (
+                        <a href={item.href} target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:underline">
+                          {item.value}
+                        </a>
+                      ) : (
+                        <div className="text-gray-600 dark:text-gray-400">{item.value}</div>
+                      )}
                     </div>
                   </motion.div>
                 ))}
@@ -964,7 +1077,7 @@ export default function Portfolio() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="px-0 pb-0">
-                  <form className="space-y-6">
+                  <form onSubmit={handleFormSubmit} className="space-y-6">
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
@@ -977,8 +1090,12 @@ export default function Portfolio() {
                           Nombre
                         </label>
                         <Input
+                          name="name"
+                          value={formData.name}
+                          onChange={handleFormChange}
                           placeholder="Tu nombre"
                           className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                          required
                         />
                       </div>
                       <div>
@@ -986,8 +1103,12 @@ export default function Portfolio() {
                           Apellido
                         </label>
                         <Input
+                          name="lastname"
+                          value={formData.lastname}
+                          onChange={handleFormChange}
                           placeholder="Tu apellido"
                           className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                          required
                         />
                       </div>
                     </motion.div>
@@ -1003,8 +1124,12 @@ export default function Portfolio() {
                       </label>
                       <Input
                         type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleFormChange}
                         placeholder="tu@email.com"
                         className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                        required
                       />
                     </motion.div>
 
@@ -1016,8 +1141,12 @@ export default function Portfolio() {
                     >
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Asunto</label>
                       <Input
+                        name="subject"
+                        value={formData.subject}
+                        onChange={handleFormChange}
                         placeholder="Asunto del mensaje"
                         className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                        required
                       />
                     </motion.div>
 
@@ -1029,9 +1158,13 @@ export default function Portfolio() {
                     >
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mensaje</label>
                       <Textarea
+                        name="message"
+                        value={formData.message}
+                        onChange={handleFormChange}
                         placeholder="Escribe tu mensaje aquí..."
                         rows={5}
                         className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                        required
                       />
                     </motion.div>
 
@@ -1043,10 +1176,20 @@ export default function Portfolio() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <Button className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600">
-                        Enviar mensaje
+                      <Button
+                        type="submit"
+                        disabled={formStatus === 'loading'}
+                        className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+                      >
+                        {formStatus === 'loading' ? 'Enviando...' : 'Enviar mensaje'}
                       </Button>
                     </motion.div>
+                    {formStatus === 'success' && (
+                      <p className="text-green-600 dark:text-green-400 text-center">¡Mensaje enviado con éxito!</p>
+                    )}
+                    {formStatus === 'error' && (
+                      <p className="text-red-600 dark:text-red-400 text-center">Hubo un error al enviar el mensaje. Por favor, inténtalo de nuevo.</p>
+                    )}
                   </form>
                 </CardContent>
               </Card>
@@ -1071,12 +1214,16 @@ export default function Portfolio() {
             viewport={{ once: true }}
             className="flex justify-center space-x-6 mb-6"
           >
-            {[Mail, Linkedin, Github].map((Icon, index) => (
-              <motion.div key={index} whileHover={{ scale: 1.2, y: -2 }} whileTap={{ scale: 0.9 }}>
+            {[
+              {Icon: Mail, href: "mailto:henrymanuelnavarro@gmail.com"},
+              {Icon: Linkedin, href: "https://www.linkedin.com/in/henry-navarro/"},
+              {Icon: Github, href: "https://github.com/hmnavarro"}
+            ].map(({Icon, href}, index) => (
+              <motion.a key={index} href={href} target="_blank" rel="noopener noreferrer" whileHover={{ scale: 1.2, y: -2 }} whileTap={{ scale: 0.9 }}>
                 <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
                   <Icon className="w-5 h-5" />
                 </Button>
-              </motion.div>
+              </motion.a>
             ))}
           </motion.div>
           <motion.p

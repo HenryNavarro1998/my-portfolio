@@ -1,0 +1,38 @@
+erDiagram
+    PROJECTS {
+        int id PK
+        string title
+        string description
+        string type
+    }
+
+    TECHNOLOGIES {
+        int id PK
+        string name
+        string icon
+        int level
+        string levelText
+    }
+
+    PROJECT_TECHNOLOGIES {
+        int project_id PK, FK
+        int technology_id PK, FK
+    }
+
+    SKILLS {
+        int id PK
+        string name
+    }
+
+    MESSAGES {
+        int id PK
+        string name
+        string lastname
+        string email
+        string subject
+        text message
+        datetime created_at
+    }
+
+    PROJECTS ||--o{ PROJECT_TECHNOLOGIES : uses
+    TECHNOLOGIES ||--o{ PROJECT_TECHNOLOGIES : "is used in" 
