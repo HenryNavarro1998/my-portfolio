@@ -24,6 +24,16 @@ import {
   Star,
 } from "lucide-react"
 
+type Repository = {
+  id: string,
+  name: string,
+  html_url: string,
+  description: string,
+  language: string,
+  stargazers_count: number,
+  forks_count: number,
+}
+
 export default function Portfolio() {
   const [activeSection, setActiveSection] = useState("inicio")
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -37,8 +47,8 @@ export default function Portfolio() {
     message: "",
   })
   const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
-  const [repos, setRepos] = useState<any[]>([])
-  const [loadingRepos, setLoadingRepos] = useState<Boolean>(true)
+  const [repos, setRepos] = useState<Repository[]>([])
+  const [loadingRepos, setLoadingRepos] = useState<boolean>(true)
 
   useEffect(() => {
     setMounted(true)
