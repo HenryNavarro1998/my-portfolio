@@ -38,6 +38,8 @@ export default function Portfolio() {
     message: "",
   })
   const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
+  const [repos, setRepos] = useState<any[]>([])
+  const [loadingRepos, setLoadingRepos] = useState(true)
 
   useEffect(() => {
     setMounted(true)
@@ -124,6 +126,21 @@ export default function Portfolio() {
 
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
+  useEffect(() => {
+    async function fetchRepos() {
+      try {
+        const res = await fetch("https://api.github.com/users/HenryNavarro1998/repos?sort=updated")
+        const data = await res.json()
+        setRepos(data)
+      } catch (e) {
+        setRepos([])
+      } finally {
+        setLoadingRepos(false)
+      }
+    }
+    fetchRepos()
   }, [])
 
   const technologies = [
@@ -238,6 +255,7 @@ export default function Portfolio() {
         "Desarrollo de módulos de localización fiscal para Venezuela, Panamá, Colombia, Estados Unidos y España, cumpliendo con las normativas tributarias específicas de cada país.",
       technologies: ["Python", "Odoo", "XML", "PostgreSQL"],
       type: "Desarrollo Backend",
+      github: "https://github.com/hmnavarro/odoo-localizacion-fiscal",
     },
     {
       title: "Integración de Pasarelas de Pago",
@@ -245,6 +263,7 @@ export default function Portfolio() {
         "Implementación de integraciones con múltiples pasarelas de pago y máquinas fiscales mediante consumo de APIs REST.",
       technologies: ["Python", "APIs REST", "Odoo", "JavaScript"],
       type: "Integración de Sistemas",
+      github: "https://github.com/hmnavarro/odoo-pasarelas-pago",
     },
     {
       title: "Sistema de Control de Asistencia",
@@ -252,6 +271,7 @@ export default function Portfolio() {
         "Desarrollo de módulo personalizado para control de asistencia integrado con dispositivos biométricos y sistemas de recursos humanos.",
       technologies: ["Python", "Odoo", "PostgreSQL", "APIs"],
       type: "Desarrollo FullStack",
+      github: "https://github.com/hmnavarro/odoo-control-asistencia",
     },
     {
       title: "Plataforma de Gestión Empresarial",
@@ -259,6 +279,7 @@ export default function Portfolio() {
         "Desarrollo de módulos personalizados para gestión integral de empresas, incluyendo inventario, ventas, compras y contabilidad.",
       technologies: ["Python", "Odoo", "JavaScript", "PostgreSQL"],
       type: "Desarrollo FullStack",
+      github: "https://github.com/hmnavarro/odoo-gestion-empresarial",
     },
   ]
 
@@ -941,15 +962,19 @@ export default function Portfolio() {
                           </Badge>
                         </motion.div>
                       </div>
-                      <motion.div whileHover={{ scale: 1.1, rotate: 15 }} whileTap={{ scale: 0.9 }}>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="opacity-0 group-hover:opacity-100 transition-opacity dark:text-gray-300 dark:hover:bg-gray-700"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </Button>
-                      </motion.div>
+                      {project.github && (
+                        <motion.div whileHover={{ scale: 1.1, rotate: 15 }} whileTap={{ scale: 0.9 }}>
+                          <a
+                            href={project.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-gray-500 hover:text-black dark:hover:text-white transition-colors"
+                            title="Ver en GitHub"
+                          >
+                            <Github className="w-5 h-5" />
+                          </a>
+                        </motion.div>
+                      )}
                     </div>
                     <CardDescription className="text-base leading-relaxed dark:text-gray-400">
                       {project.description}
@@ -977,6 +1002,65 @@ export default function Portfolio() {
               </motion.div>
             ))}
           </div>
+        </div>
+      </motion.section>
+
+      {/* Repositorios de GitHub */}
+      <motion.section
+        id="repositorios"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+        className="py-16 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-800"
+      >
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">Repositorios</h2>
+            <motion.div
+              initial={{ width: 0 }}
+              whileInView={{ width: 80 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="h-1 bg-blue-600 dark:bg-blue-400 mx-auto"
+            ></motion.div>
+          </motion.div>
+          {loadingRepos ? (
+            <div className="text-center text-gray-500 dark:text-gray-400">Cargando repositorios...</div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {repos && Array.isArray(repos) && repos.length > 0 ? (
+                repos.map((repo) => (
+                  <Card key={repo.id} className="h-full flex flex-col justify-between dark:bg-gray-800 dark:border-gray-700">
+                    <CardHeader>
+                      <div className="flex items-center gap-2 mb-2">
+                        <BookOpen className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        <a href={repo.html_url} target="_blank" rel="noopener noreferrer" className="font-bold text-lg text-blue-700 dark:text-blue-300 hover:underline">
+                          {repo.name}
+                        </a>
+                      </div>
+                      <CardDescription className="text-gray-600 dark:text-gray-400 mb-2">
+                        {repo.description || <span className="italic text-gray-400">Sin descripción</span>}
+                      </CardDescription>
+                      <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                        {repo.language && <span>🛠️ {repo.language}</span>}
+                        <span>⭐ {repo.stargazers_count}</span>
+                        <span>🍴 {repo.forks_count}</span>
+                      </div>
+                    </CardHeader>
+                  </Card>
+                ))
+              ) : (
+                <div className="text-center col-span-3 text-gray-500 dark:text-gray-400">No se encontraron repositorios.</div>
+              )}
+            </div>
+          )}
         </div>
       </motion.section>
 
