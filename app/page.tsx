@@ -91,6 +91,7 @@ export default function Portfolio() {
         setFormStatus("error")
       }
     } catch (error) {
+      console.log(error)
       setFormStatus("error")
     }
   }
